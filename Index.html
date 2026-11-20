@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab Maya TKJ - Simulasi Penyambungan Fiber Optik (Fusion Splicer)</title>
+  <style>
+    :root {
+      --bg-main: #0b1120;
+      --bg-panel: #111827;
+      --bg-card: #1e293b;
+      --bg-input: #0f172a;
+      --border: #334155;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --accent-blue: #38bdf8;
+      --accent-cyan: #22d3ee;
+      --accent-green: #22c55e;
+      --accent-amber: #f59e0b;
+      --accent-red: #ef4444;
+      --accent-purple: #a855f7;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.45;
+    }
+
+    /* Header */
+    header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 18px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #0284c7, #22d3ee);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 16px;
+      color: #082f49;
+      box-shadow: 0 0 14px rgba(34, 211, 238, 0.35);
+    }
+
+    .brand-text h1 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .badge-modul {
+      font-size: 0.7rem;
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent-blue);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+
+    .brand-text p {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+    }
+
+    .header-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    select, button {
+      font-family: inherit;
+      font-size: 0.82rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      transition: all 0.2s ease;
+    }
+
+    select {
+      background-color: var(--bg-input);
+      color: var(--text-primary);
+      padding: 7px 10px;
+      cursor: pointer;
+    }
+
+    select:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+    }
+
+    .btn {
+      padding: 7px 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background-color: var(--bg-card);
+      color: var(--text-primary);
+    }
+
+    .btn:hover:not(:disabled) {
+      border-color: var(--accent-blue);
+      background-color: #26354d;
+    }
+
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0284c7, #0ea5e9);
+      border-color: #38bdf8;
+      color: #ffffff;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: linear-gradient(135deg, #0369a1, #0284c7);
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.45);
+      color: #fca5a5;
+    }
+
+    .btn-danger:hover:not(:disabled) {
+      background: rgba(239, 68, 68, 0.28);
+    }
+
+    .btn-warning {
+      background: rgba(245, 158, 11, 0.15);
+      border-color: rgba(245, 158, 11, 0.45);
+      color: #fcd34d;
+    }
+
+    /* Main 3-Column Layout */
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 310px 1fr 330px;
+      gap: 14px;
+      padding: 14px;
+      max-width: 1600px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 1180px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      background-color: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 10px 14px;
+      background-color: rgba(30, 41, 59, 0.75);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .panel-title {
+      font-size: 0.86rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+    }
+
+    .status-pill {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(34, 197, 94, 0.15);
+      color: var(--accent-green);
+      border: 1px solid rgba(34, 197, 94, 0.35);
+    }
+
+    .panel-body {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+    }
+
+    /* SOP Steps List */
+    .mode-switch {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      background: var(--bg-input);
+      padding: 4px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .mode-btn {
+      padding: 6px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .mode-btn.active {
+      background: var(--bg-card);
+      color: var(--accent-blue);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    }
+
+    .sop-list {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .step-btn {
+      width: 100%;
+      text-align: left;
+      padding: 9px 11px;
+      background-color: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .step-btn:hover {
+      border-color: var(--accent-blue);
+      transform: translateY(-1px);
+    }
+
+    .step-btn.completed {
+      border-color: rgba(34, 197, 94, 0.55);
+      background: rgba(34, 197, 94, 0.08);
+    }
+
+    .step-btn.recommended {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.35);
+    }
+
+    .step-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .step-name {
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    .step-desc {
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+    }
+
+    .step-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 6px;
+      background: var(--bg-input);
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    .step-btn.completed .step-badge {
+      background: rgba(34, 197, 94, 0.2);
+      color: #4ade80;
+    }
+
+    .quick-tools {
+      border-top: 1px solid var(--border);
+      padding-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .quick-tools-title {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+
+    /* Center Stage: Workbench & Microscope */
+    .workbench-card {
+      background: radial-gradient(circle at top, #1e293b 0%, #0f172a 100%);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+    }
+
+    .workbench-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+    }
+
+    .svg-stage {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 8px;
+      background-color: #090d16;
+      border: 1px solid #1e293b;
+    }
+
+    .microscope-card {
+      background-color: #060a12;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .microscope-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .microscope-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--accent-green);
+      font-family: monospace;
+    }
+
+    .microscope-meta {
+      font-size: 0.74rem;
+      font-family: monospace;
+      color: var(--accent-amber);
+    }
+
+    .arc-flash {
+      animation: arcPulse 0.45s ease-in-out infinite alternate;
+    }
+
+    @keyframes arcPulse {
+      from { opacity: 0.35; filter: drop-shadow(0 0 6px #38bdf8); }
+      to { opacity: 1; filter: drop-shadow(0 0 18px #e0f2fe); }
+    }
+
+    /* Right Panel: Telemetry & OTDR */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .metric-box {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 10px;
+    }
+
+    .metric-label {
+      font-size: 0.71rem;
+      color: var(--text-secondary);
+      margin-bottom: 3px;
+    }
+
+    .metric-value {
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: monospace;
+      color: var(--text-primary);
+    }
+
+    .metric-sub {
+      font-size: 0.69rem;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .otdr-box {
+      background-color: #090d16;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+    }
+
+    .otdr-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      color: var(--accent-cyan);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .log-box {
+      background-color: #050810;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      height: 195px;
+      overflow-y: auto;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .log-entry {
+      padding-bottom: 4px;
+      border-bottom: 1px dashed rgba(51, 65, 85, 0.5);
+    }
+
+    .log-info { color: #cbd5e1; }
+    .log-success { color: #4ade80; }
+    .log-warn { color: #fbbf24; }
+    .log-error { color: #f87171; }
+
+    footer {
+      text-align: center;
+      padding: 10px;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      border-top: 1px solid var(--border);
+      background-color: var(--bg-panel);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="brand-icon">FO</div>
+      <div class="brand-text">
+        <h1>
+          Lab Maya TKJ: Penyambungan Fiber Optik
+          <span class="badge-modul">Fusion Splicer &amp; OTDR</span>
+        </h1>
+        <p>Praktikum Terminasi, Cleaving, Fusion Splicing Core-to-Core &amp; Analisis Redaman Optik</p>
+      </div>
+    </div>
+
+    <div class="header-controls">
+      <select id="scenarioSelect" aria-label="Pilih Skenario Praktikum">
+        <option value="normal">Skenario 1: Normal (Pisau Cleaver Tajam)</option>
+        <option value="dull_blade">Skenario 2: Mata Pisau Cleaver Tumpul (&gt;2.0°)</option>
+        <option value="dirty_core">Skenario 3: Inti Fiber Kotor / Berdebu (Bubble)</option>
+        <option value="bad_alignment">Skenario 4: Sumbu X/Y Tidak Sejajar</option>
+      </select>
+      <button type="button" class="btn btn-primary" id="btnAutoDemo">Jalankan Demo SOP</button>
+      <button type="button" class="btn btn-danger" id="btnReset">Reset Lab</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- PANEL KIRI: MEJA ALAT & 8 LANGKAH SOP -->
+    <section class="panel">
+      <div class="panel-header">
+        <span class="panel-title">1. Peralatan &amp; SOP Kerja</span>
+        <span class="status-pill" id="progressPill">0 / 8</span>
+      </div>
+      <div class="panel-body">
+        <div class="mode-switch">
+          <button type="button" class="mode-btn active" id="modeGuideBtn">Mode Panduan SOP</button>
+          <button type="button" class="mode-btn" id="modeExamBtn">Mode Ujian Mandiri</button>
+        </div>
+
+        <div class="sop-list" id="sopList"></div>
+
+        <div class="quick-tools">
+          <div class="quick-tools-title">Alat Perbaikan &amp; Kalibrasi Cepat:</div>
+          <button type="button" class="btn btn-warning" id="btnRotateBlade">
+            Putar Posisi Mata Pisau Cleaver (+1)
+          </button>
+          <button type="button" class="btn" id="btnReclean">
+            Potong Ulang &amp; Bersihkan Alkohol 96%
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANEL TENGAH: MEJA KERJA & MIKROSKOP FUSION SPLICER -->
+    <section class="panel">
+      <div class="panel-header">
+        <span class="panel-title">2. Visualisasi Meja Kerja &amp; Splicer</span>
+        <span class="status-pill" id="splicerStateBadge">STANDBY</span>
+      </div>
+      <div class="panel-body">
+        <!-- SVG Meja Kerja Kabel & Unit Splicer -->
+        <div class="workbench-card">
+          <div class="workbench-header">
+            <span>Struktur Lapisan Kabel &amp; Unit Mesin Splicer</span>
+            <span id="layerStatusText">Jacket Terpasang (250µm/900µm)</span>
+          </div>
+          <svg class="svg-stage" viewBox="0 0 640 220" role="img" aria-label="Visualisasi Meja Kerja Penyambungan Fiber Optik">
+            <defs>
+              <linearGradient id="jacketGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#334155" />
+                <stop offset="50%" stop-color="#0f172a" />
+                <stop offset="100%" stop-color="#1e293b" />
+              </linearGradient>
+              <linearGradient id="coreGlow" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#38bdf8" />
+                <stop offset="50%" stop-color="#22d3ee" />
+                <stop offset="100%" stop-color="#38bdf8" />
+              </linearGradient>
+            </defs>
+
+            <!-- Background Grid -->
+            <rect x="0" y="0" width="640" height="220" fill="#090d16" />
+            <g stroke="#1e293b" stroke-width="1">
+              <line x1="0" y1="44" x2="640" y2="44" />
+              <line x1="0" y1="88" x2="640" y2="88" />
+              <line x1="0" y1="132" x2="640" y2="132" />
+              <line x1="0" y1="176" x2="640" y2="176" />
+            </g>
+
+            <!-- Mesin Fusion Splicer Body (Tengah) -->
+            <rect x="215" y="28" width="210" height="145" rx="12" fill="#1e293b" stroke="#475569" stroke-width="2" />
+            <rect x="230" y="42" width="180" height="72" rx="6" fill="#0f172a" stroke="#334155" />
+            <text x="320" y="62" text-anchor="middle" fill="#38bdf8" font-size="11" font-family="monospace" font-weight="bold">FUSION SPLICER AI-9</text>
+            <text id="splicerScreenMsg" x="320" y="83" text-anchor="middle" fill="#22c55e" font-size="11" font-family="monospace">SIAP MENERIMA FIBER</text>
+            <text id="splicerSubMsg" x="320" y="100" text-anchor="middle" fill="#94a3b8" font-size="9.5" font-family="monospace">V-Groove L &amp; R Terbuka</text>
+
+            <!-- Elektroda Atas & Bawah -->
+            <polygon points="315,118 325,118 320,132" fill="#f59e0b" />
+            <polygon points="315,164 325,164 320,150" fill="#f59e0b" />
+
+            <!-- Kilatan Busur Listrik (ARC) -->
+            <circle id="workArcGlow" cx="320" cy="141" r="16" fill="#38bdf8" opacity="0" />
+
+            <!-- Kabel Kiri (Input OLT) -->
+            <g id="leftCableGroup">
+              <!-- Outer Jacket Kiri -->
+              <rect id="leftJacket" x="10" y="129" width="165" height="24" rx="4" fill="url(#jacketGrad)" stroke="#475569" />
+              <!-- Buffer Coating (Biru) -->
+              <rect id="leftBuffer" x="175" y="133" width="45" height="16" fill="#0284c7" />
+              <!-- Cladding (Kaca Transparan) -->
+              <rect id="leftCladding" x="220" y="136" width="88" height="10" fill="#cbd5e1" opacity="0.55" />
+              <!-- Core 9µm -->
+              <rect id="leftCore" x="220" y="139.5" width="88" height="3" fill="url(#coreGlow)" />
+              <!-- Protection Sleeve (Selongsong Pelindung) -->
+              <rect id="protectionSleeve" x="85" y="125" width="75" height="32" rx="6" fill="rgba(245, 158, 11, 0.28)" stroke="#f59e0b" stroke-dasharray="4 2" />
+              <text id="sleeveLabel" x="122" y="119" text-anchor="middle" fill="#fbbf24" font-size="9.5" font-family="monospace">Sleeve</text>
+            </g>
+
+            <!-- Kabel Kanan (Dropcore / Distribusi) -->
+            <g id="rightCableGroup">
+              <rect id="rightJacket" x="465" y="129" width="165" height="24" rx="4" fill="url(#jacketGrad)" stroke="#475569" />
+              <rect id="rightBuffer" x="420" y="133" width="45" height="16" fill="#0284c7" />
+              <rect id="rightCladding" x="332" y="136" width="88" height="10" fill="#cbd5e1" opacity="0.55" />
+              <rect id="rightCore" x="332" y="139.5" width="88" height="3" fill="url(#coreGlow)" />
+            </g>
+
+            <!-- Heater Oven di Bagian Bawah -->
+            <rect x="245" y="182" width="150" height="26" rx="6" fill="#1e293b" stroke="#475569" />
+            <text id="heaterStatusText" x="320" y="199" text-anchor="middle" fill="#94a3b8" font-size="10" font-family="monospace">HEATER OVEN: OFF (25°C)</text>
+          </svg>
+        </div>
+
+        <!-- Layar Mikroskop Dual-Camera X/Y -->
+        <div class="microscope-card">
+          <div class="microscope-top">
+            <span class="microscope-title">LAYAR MIKROSKOP DUAL-AXIS (X / Y) - 300x ZOOM</span>
+            <span class="microscope-meta" id="microscopeHud">GAP: 24.0 µm | OFFSET Y: 0.0 µm | SUDUT: -</span>
+          </div>
+          <svg class="svg-stage" viewBox="0 0 640 165" role="img" aria-label="Tampilan Mikroskop Inti Fiber Optik">
+            <rect x="0" y="0" width="640" height="165" fill="#04070d" />
+            <!-- Crosshair -->
+            <line x1="320" y1="0" x2="320" y2="165" stroke="#1e293b" stroke-width="1" stroke-dasharray="4 4" />
+            <line x1="0" y1="82.5" x2="640" y2="82.5" stroke="#1e293b" stroke-width="1" stroke-dasharray="4 4" />
+
+            <!-- Sumbu X (Atas) -->
+            <text x="12" y="20" fill="#38bdf8" font-size="11" font-family="monospace">AXIS-X (Kamera Atas)</text>
+            <!-- Cladding & Core Kiri X -->
+            <rect id="micLeftCladX" x="40" y="30" width="265" height="34" fill="#334155" opacity="0.65" />
+            <rect id="micLeftCoreX" x="40" y="43" width="265" height="8" fill="#22d3ee" />
+            <!-- Cladding & Core Kanan X -->
+            <rect id="micRightCladX" x="335" y="30" width="265" height="34" fill="#334155" opacity="0.65" />
+            <rect id="micRightCoreX" x="335" y="43" width="265" height="8" fill="#22d3ee" />
+
+            <!-- Sumbu Y (Bawah) -->
+            <text x="12" y="102" fill="#38bdf8" font-size="11" font-family="monospace">AXIS-Y (Kamera Samping)</text>
+            <rect id="micLeftCladY" x="40" y="112" width="265" height="34" fill="#334155" opacity="0.65" />
+            <rect id="micLeftCoreY" x="40" y="125" width="265" height="8" fill="#22d3ee" />
+            <rect id="micRightCladY" x="335" y="112" width="265" height="34" fill="#334155" opacity="0.65" />
+            <rect id="micRightCoreY" x="335" y="125" width="265" height="8" fill="#22d3ee" />
+
+            <!-- Indikator Debu / Cacat Potong / Bubble -->
+            <g id="defectLayer" opacity="0">
+              <circle cx="316" cy="47" r="4" fill="#ef4444" />
+              <circle cx="323" cy="129" r="5" fill="#f59e0b" />
+              <text x="320" y="86" text-anchor="middle" fill="#f87171" font-size="10" font-family="monospace" font-weight="bold">! DETEKSI DEBU / BUBBLE PADA CORE !</text>
+            </g>
+
+            <!-- Efek Kilatan Las Listrik di Tengah Mikroskop -->
+            <ellipse id="micArcFlash" cx="320" cy="82.5" rx="22" ry="70" fill="#7dd3fc" opacity="0" />
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANEL KANAN: TELEMETRI OPTIK, OTDR & LOG DIAGNOSTIK -->
+    <section class="panel">
+      <div class="panel-header">
+        <span class="panel-title">3. Telemetri Optik &amp; OTDR</span>
+        <span class="status-pill" id="qualityPill">BELUM DIUJI</span>
+      </div>
+      <div class="panel-body">
+        <div class="metrics-grid">
+          <div class="metric-box">
+            <div class="metric-label">Sudut Cleave (L / R)</div>
+            <div class="metric-value" id="metricAngle">- / -</div>
+            <div class="metric-sub">Standar ITU-T: &le; 1.0°</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-label">Estimasi Splice Loss</div>
+            <div class="metric-value" id="metricLoss">- dB</div>
+            <div class="metric-sub">Batas Baik: &le; 0.05 dB</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-label">Daya Terima OPM (1310nm)</div>
+            <div class="metric-value" id="metricOpm">-14.20 dBm</div>
+            <div class="metric-sub">Tx Sumber: -14.00 dBm</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-label">Posisi Pisau Cleaver</div>
+            <div class="metric-value" id="metricBlade">Posisi #1</div>
+            <div class="metric-sub" id="metricBladeStatus">Kondisi: Tajam</div>
+          </div>
+        </div>
+
+        <!-- Grafik Kurva OTDR -->
+        <div class="otdr-box">
+          <div class="otdr-header">
+            <span>Grafik Trace OTDR (Titik Sambung: 250 m)</span>
+            <span id="otdrEventBadge">Event: Menunggu</span>
+          </div>
+          <svg class="svg-stage" viewBox="0 0 320 130" role="img" aria-label="Grafik Reflektansi OTDR">
+            <rect x="0" y="0" width="320" height="130" fill="#050810" />
+            <!-- Grid OTDR -->
+            <g stroke="#1e293b" stroke-width="1">
+              <line x1="30" y1="20" x2="310" y2="20" />
+              <line x1="30" y1="50" x2="310" y2="50" />
+              <line x1="30" y1="80" x2="310" y2="80" />
+              <line x1="30" y1="110" x2="310" y2="110" />
+              <line x1="170" y1="10" x2="170" y2="115" stroke-dasharray="3 3" stroke="#334155" />
+            </g>
+            <text x="6" y="24" fill="#64748b" font-size="8" font-family="monospace">0dB</text>
+            <text x="4" y="84" fill="#64748b" font-size="8" font-family="monospace">-15</text>
+            <text x="155" y="124" fill="#38bdf8" font-size="8" font-family="monospace">250m</text>
+            <text x="285" y="124" fill="#64748b" font-size="8" font-family="monospace">500m</text>
+
+            <!-- Kurva Sinyal OTDR -->
+            <polyline id="otdrTraceLine" fill="none" stroke="#22c55e" stroke-width="2"
+              points="30,22 36,12 42,24 170,32 170,95" />
+          </svg>
+        </div>
+
+        <!-- Log Diagnostik -->
+        <div>
+          <div class="quick-tools-title" style="margin-bottom: 6px;">Log Aktivitas &amp; Diagnostik Lab:</div>
+          <div class="log-box" id="logContainer"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Lab Maya Teknik Komputer dan Jaringan (TKJ) &bull; Simulasi Interaktif Penyambungan Fiber Optik
+  </footer>
+
+  <script>
+    // @ts-nocheck
+    (function () {
+      "use strict";
+
+      /**
+       * @typedef {Object} StepItem
+       * @property {number} id
+       * @property {string} title
+       * @property {string} desc
+       */
+
+      /** @type {StepItem[]} */
+      const SOP_STEPS = [
+        { id: 1, title: "1. Masukkan Protection Sleeve", desc: "Selipkan selongsong pelindung ke salah satu sisi kabel." },
+        { id: 2, title: "2. Kupas Jacket & Cladding (Stripper)", desc: "Kupas lapisan pelindung 250µm/900µm sepanjang ±3 cm." },
+        { id: 3, title: "3. Bersihkan Inti (Alkohol 96% + Tissue)", desc: "Usap kaca fiber satu arah hingga bebas debu & minyak." },
+        { id: 4, title: "4. Potong Presisi (Fiber Cleaver)", desc: "Hasilkan sudut potong rata (< 1.0°) untuk kedua ujung." },
+        { id: 5, title: "5. Pasang di V-Groove Splicer", desc: "Letakkan ujung fiber tepat di antara elektroda." },
+        { id: 6, title: "6. Alignment & Fusion Arc (SET)", desc: "Sejajarkan sumbu X/Y lalu leburkan core dengan busur listrik." },
+        { id: 7, title: "7. Geser Sleeve & Panaskan (Heater)", desc: "Tutup titik sambung dengan sleeve lalu panaskan di oven." },
+        { id: 8, title: "8. Uji Kualitas Sambungan (OTDR/OPM)", desc: "Verifikasi redaman sambungan (< 0.05 dB) & reflektansi." }
+      ];
+
+      const state = {
+        mode: "guide", // "guide" | "exam"
+        scenario: "normal",
+        completedSteps: new Set(),
+        bladePosition: 1,
+        bladeIsSharp: true,
+        isCleaned: false,
+        isStripped: false,
+        isCleaved: false,
+        inSplicer: false,
+        isSpliced: false,
+        isHeated: false,
+        isTested: false,
+        angleLeft: null,
+        angleRight: null,
+        offsetY: 0,
+        hasDirt: false,
+        hasBubble: false,
+        spliceLoss: null,
+        demoRunning: false
+      };
+
+      // Referensi Elemen DOM
+      const sopListEl = document.getElementById("sopList");
+      const progressPill = document.getElementById("progressPill");
+      const splicerStateBadge = document.getElementById("splicerStateBadge");
+      const qualityPill = document.getElementById("qualityPill");
+      const logContainer = document.getElementById("logContainer");
+      const scenarioSelect = document.getElementById("scenarioSelect");
+      const modeGuideBtn = document.getElementById("modeGuideBtn");
+      const modeExamBtn = document.getElementById("modeExamBtn");
+
+      /**
+       * Menambahkan baris pesan ke panel log diagnostik
+       * @param {string} message
+       * @param {"info"|"success"|"warn"|"error"} [level="info"]
+       */
+      function addLog(message, level) {
+        const entryType = level || "info";
+        const timeStr = new Date().toLocaleTimeString("id-ID", { hour12: false });
+        const div = document.createElement("div");
+        div.className = "log-entry log-" + entryType;
+        div.textContent = "[" + timeStr + "] " + message;
+        logContainer.appendChild(div);
+        logContainer.scrollTop = logContainer.scrollHeight;
+      }
+
+      /**
+       * Menerapkan parameter skenario praktikum
+       * @param {string} scenarioKey
+       */
+      function applyScenario(scenarioKey) {
+        state.scenario = scenarioKey;
+        resetWorkspace(false);
+
+        if (scenarioKey === "normal") {
+          state.bladeIsSharp = true;
+          state.hasDirt = false;
+          state.offsetY = 0.0;
+          addLog("Skenario 1 aktif: Peralatan kalibrasi standar, pisau cleaver tajam.", "info");
+        } else if (scenarioKey === "dull_blade") {
+          state.bladeIsSharp = false;
+          state.hasDirt = false;
+          state.offsetY = 0.1;
+          addLog("Skenario 2 aktif: Mata pisau cleaver posisi saat ini tumpul! Putar posisi pisau sebelum memotong.", "warn");
+        } else if (scenarioKey === "dirty_core") {
+          state.bladeIsSharp = true;
+          state.hasDirt = true;
+          state.offsetY = 0.1;
+          addLog("Skenario 3 aktif: Lingkungan berdebu. Pastikan pembersihan alkohol dilakukan dengan benar.", "warn");
+        } else if (scenarioKey === "bad_alignment") {
+          state.bladeIsSharp = true;
+          state.hasDirt = false;
+          state.offsetY = 2.8;
+          addLog("Skenario 4 aktif: V-Groove sedikit bergeser, perhatikan alignment sumbu X/Y saat proses SET.", "warn");
+        }
+        updateUI();
+      }
+
+      /**
+       * Mengatur ulang status meja kerja
+       * @param {boolean} [announce=true]
+       */
+      function resetWorkspace(announce) {
+        state.completedSteps.clear();
+        state.isCleaned = false;
+        state.isStripped = false;
+        state.isCleaved = false;
+        state.inSplicer = false;
+        state.isSpliced = false;
+        state.isHeated = false;
+        state.isTested = false;
+        state.angleLeft = null;
+        state.angleRight = null;
+        state.hasBubble = false;
+        state.spliceLoss = null;
+        state.demoRunning = false;
+
+        if (announce !== false) {
+          logContainer.innerHTML = "";
+          addLog("Meja kerja praktikum direset ke kondisi awal.", "info");
+        }
+        updateUI();
+      }
+
+      /**
+       * Menjalankan langkah praktikum berdasarkan nomor ID langkah
+       * @param {number} stepId
+       */
+      function executeStep(stepId) {
+        // Validasi urutan pada mode panduan
+        const expectedStep = state.completedSteps.size + 1;
+        if (state.mode === "guide" && stepId !== expectedStep && !state.completedSteps.has(stepId)) {
+          addLog("Ikuti urutan SOP! Langkah berikutnya adalah Langkah " + expectedStep + ".", "warn");
+          return;
+        }
+
+        switch (stepId) {
+          case 1: {
+            state.completedSteps.add(1);
+            addLog("Langkah 1 selesai: Protection sleeve dimasukkan ke kabel kiri.", "success");
+            break;
+          }
+          case 2: {
+            if (!state.completedSteps.has(1)) {
+              addLog("Peringatan SOP: Anda lupa memasukkan protection sleeve sebelum mengupas kabel!", "error");
+            }
+            state.isStripped = true;
+            state.completedSteps.add(2);
+            addLog("Langkah 2 selesai: Lapisan jacket & buffer dikupas dengan Fiber Stripper.", "success");
+            break;
+          }
+          case 3: {
+            if (!state.isStripped) {
+              addLog("Kupas lapisan kabel terlebih dahulu (Langkah 2) sebelum membersihkan.", "warn");
+              return;
+            }
+            state.isCleaned = true;
+            if (state.scenario === "dirty_core") {
+              state.hasDirt = false;
+            }
+            state.completedSteps.add(3);
+            addLog("Langkah 3 selesai: Inti kaca dibersihkan dengan tisu bebas serat & alkohol 96%.", "success");
+            break;
+          }
+          case 4: {
+            if (!state.isStripped) {
+              addLog("Kupas kabel terlebih dahulu sebelum memotong dengan Cleaver.", "warn");
+              return;
+            }
+            if (!state.isCleaned) {
+              state.hasDirt = true;
+              addLog("Peringatan: Fiber dipotong tanpa dibersihkan alkohol terlebih dahulu!", "warn");
+            }
+            state.isCleaved = true;
+            if (state.bladeIsSharp) {
+              state.angleLeft = Number((0.2 + Math.random() * 0.4).toFixed(2));
+              state.angleRight = Number((0.2 + Math.random() * 0.4).toFixed(2));
+              addLog("Langkah 4 selesai: Hasil cleave presisi (" + state.angleLeft + "° / " + state.angleRight + "°).", "success");
+            } else {
+              state.angleLeft = Number((2.3 + Math.random() * 0.8).toFixed(2));
+              state.angleRight = Number((2.1 + Math.random() * 0.7).toFixed(2));
+              addLog("Sudut potong buruk (" + state.angleLeft + "° / " + state.angleRight + "°) karena pisau tumpul!", "error");
+            }
+            state.completedSteps.add(4);
+            break;
+          }
+          case 5: {
+            if (!state.isCleaved) {
+              addLog("Potong ujung fiber dengan Cleaver terlebih dahulu (Langkah 4).", "warn");
+              return;
+            }
+            state.inSplicer = true;
+            state.completedSteps.add(5);
+            addLog("Langkah 5 selesai: Kedua ujung fiber diletakkan pada V-Groove Fusion Splicer.", "success");
+            break;
+          }
+          case 6: {
+            if (!state.inSplicer) {
+              addLog("Letakkan fiber ke dalam V-Groove Splicer terlebih dahulu (Langkah 5).", "warn");
+              return;
+            }
+            triggerArcFusion();
+            return;
+          }
+          case 7: {
+            if (!state.isSpliced) {
+              addLog("Lakukan penyambungan Fusion Arc (Langkah 6) sebelum memanaskan sleeve.", "warn");
+              return;
+            }
+            if (!state.completedSteps.has(1)) {
+              addLog("Gagal memanaskan: Protection sleeve tidak terpasang di kabel!", "error");
+              return;
+            }
+            state.isHeated = true;
+            state.completedSteps.add(7);
+            addLog("Langkah 7 selesai: Sleeve digeser ke titik sambung & dipanaskan di Heater Oven (60 detik).", "success");
+            break;
+          }
+          case 8: {
+            if (!state.isSpliced) {
+              addLog("Selesaikan penyambungan terlebih dahulu sebelum pengujian OTDR.", "warn");
+              return;
+            }
+            state.isTested = true;
+            state.completedSteps.add(8);
+            const isPass = state.spliceLoss !== null && state.spliceLoss <= 0.05 && !state.hasBubble;
+            if (isPass) {
+              addLog("Pengujian OTDR LULUS! Splice loss " + state.spliceLoss.toFixed(2) + " dB (Standar ITU-T).", "success");
+            } else {
+              addLog("Pengujian OTDR GAGAL! Redaman tinggi (" + (state.spliceLoss || 0.45).toFixed(2) + " dB). Periksa sudut potong/kebersihan.", "error");
+            }
+            break;
+          }
+          default:
+            break;
+        }
+        updateUI();
+      }
+
+      /**
+       * Animasi dan kalkulasi hasil peleburan Arc Fusion
+       */
+      function triggerArcFusion() {
+        const workArc = document.getElementById("workArcGlow");
+        const micArc = document.getElementById("micArcFlash");
+        const screenMsg = document.getElementById("splicerScreenMsg");
+
+        splicerStateBadge.textContent = "ARC FUSION...";
+        screenMsg.textContent = "ALIGNING & ARC...";
+        workArc.setAttribute("opacity", "0.95");
+        micArc.setAttribute("opacity", "0.85");
+        workArc.classList.add("arc-flash");
+        micArc.classList.add("arc-flash");
+
+        addLog("Menjalankan auto-alignment sumbu X/Y dan pelepasan busur listrik (ARC)...", "info");
+
+        window.setTimeout(function () {
+          workArc.setAttribute("opacity", "0");
+          micArc.setAttribute("opacity", "0");
+          workArc.classList.remove("arc-flash");
+          micArc.classList.remove("arc-flash");
+
+          // Kalibrasi otomatis sumbu X/Y saat proses alignment
+          if (state.scenario === "bad_alignment") {
+            state.offsetY = 0.1;
+            addLog("Motor stepper berhasil mengoreksi offset sumbu Y menjadi 0.1 µm.", "info");
+          }
+
+          let loss = 0.02;
+          if (!state.bladeIsSharp || (state.angleLeft !== null && state.angleLeft > 1.0)) {
+            loss += 0.24;
+          }
+          if (state.hasDirt || !state.isCleaned) {
+            loss += 0.31;
+            state.hasBubble = true;
+          } else {
+            state.hasBubble = false;
+          }
+
+          state.spliceLoss = Number(loss.toFixed(2));
+          state.isSpliced = true;
+          state.completedSteps.add(6);
+
+          if (state.hasBubble) {
+            addLog("Peringatan Splicer: Terdeteksi BUBBLE pada inti sambungan! Estimasi loss: " + state.spliceLoss.toFixed(2) + " dB.", "error");
+          } else if (state.spliceLoss > 0.05) {
+            addLog("Peringatan Splicer: Sudut cleave terlalu besar! Estimasi loss: " + state.spliceLoss.toFixed(2) + " dB.", "warn");
+          } else {
+            addLog("Fusion Splicing sukses! Estimasi Splice Loss: " + state.spliceLoss.toFixed(2) + " dB.", "success");
+          }
+          updateUI();
+        }, 900);
+      }
+
+      /**
+       * Memperbarui seluruh tampilan UI, SVG meja kerja, mikroskop, dan OTDR
+       */
+      function updateUI() {
+        // 1. Render Daftar Langkah SOP
+        sopListEl.innerHTML = "";
+        const nextExpected = state.completedSteps.size + 1;
+
+        SOP_STEPS.forEach(function (step) {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          const isDone = state.completedSteps.has(step.id);
+          const isRecommended = state.mode === "guide" && step.id === nextExpected;
+
+          btn.className = "step-btn" + (isDone ? " completed" : "") + (isRecommended ? " recommended" : "");
+          btn.addEventListener("click", function () {
+            executeStep(step.id);
+          });
+
+          const infoDiv = document.createElement("div");
+          infoDiv.className = "step-info";
+
+          const titleSpan = document.createElement("span");
+          titleSpan.className = "step-name";
+          titleSpan.textContent = step.title;
+
+          const descSpan = document.createElement("span");
+          descSpan.className = "step-desc";
+          descSpan.textContent = state.mode === "guide" ? step.desc : "Klik untuk menjalankan tahapan";
+
+          infoDiv.appendChild(titleSpan);
+          infoDiv.appendChild(descSpan);
+
+          const badgeSpan = document.createElement("span");
+          badgeSpan.className = "step-badge";
+          badgeSpan.textContent = isDone ? "SELESAI" : (isRecommended ? "BERIKUTNYA" : "AKSI");
+
+          btn.appendChild(infoDiv);
+          btn.appendChild(badgeSpan);
+          sopListEl.appendChild(btn);
+        });
+
+        progressPill.textContent = state.completedSteps.size + " / 8";
+
+        // 2. Perbarui SVG Meja Kerja Kabel & Splicer
+        const leftJacket = document.getElementById("leftJacket");
+        const rightJacket = document.getElementById("rightJacket");
+        const protectionSleeve = document.getElementById("protectionSleeve");
+        const sleeveLabel = document.getElementById("sleeveLabel");
+        const layerStatusText = document.getElementById("layerStatusText");
+        const splicerScreenMsg = document.getElementById("splicerScreenMsg");
+        const splicerSubMsg = document.getElementById("splicerSubMsg");
+        const heaterStatusText = document.getElementById("heaterStatusText");
+
+        if (state.isStripped) {
+          leftJacket.setAttribute("width", "135");
+          rightJacket.setAttribute("x", "495");
+          rightJacket.setAttribute("width", "135");
+          layerStatusText.textContent = "Terkupas: Cladding 125µm & Core 9µm Terlihat";
+        } else {
+          leftJacket.setAttribute("width", "165");
+          rightJacket.setAttribute("x", "465");
+          rightJacket.setAttribute("width", "165");
+          layerStatusText.textContent = "Jacket Terpasang (250µm/900µm)";
+        }
+
+        if (state.isHeated) {
+          protectionSleeve.setAttribute("x", "282");
+          protectionSleeve.setAttribute("fill", "rgba(34, 197, 94, 0.35)");
+          protectionSleeve.setAttribute("stroke", "#22c55e");
+          sleeveLabel.setAttribute("x", "320");
+          sleeveLabel.textContent = "Sleeve Terkunci";
+          heaterStatusText.textContent = "HEATER OVEN: SELESAI (200°C -> COOL)";
+          heaterStatusText.setAttribute("fill", "#4ade80");
+        } else if (state.completedSteps.has(1)) {
+          protectionSleeve.setAttribute("x", "85");
+          protectionSleeve.setAttribute("fill", "rgba(245, 158, 11, 0.28)");
+          protectionSleeve.setAttribute("stroke", "#f59e0b");
+          sleeveLabel.setAttribute("x", "122");
+          sleeveLabel.textContent = "Sleeve Siap";
+          heaterStatusText.textContent = "HEATER OVEN: STANDBY (25°C)";
+          heaterStatusText.setAttribute("fill", "#94a3b8");
+        } else {
+          protectionSleeve.setAttribute("x", "-120");
+          sleeveLabel.textContent = "";
+        }
+
+        if (state.isSpliced) {
+          splicerStateBadge.textContent = "SPLICED";
+          splicerScreenMsg.textContent = "LOSS: " + state.spliceLoss.toFixed(2) + " dB";
+          splicerSubMsg.textContent = state.hasBubble ? "PERINGATAN: BUBBLE!" : "SAMBUNGAN SELESAI";
+        } else if (state.inSplicer) {
+          splicerStateBadge.textContent = "READY ARC";
+          splicerScreenMsg.textContent = "FIBER TERPASANG";
+          splicerSubMsg.textContent = "Tekan Langkah 6 (SET)";
+        } else {
+          splicerStateBadge.textContent = "STANDBY";
+          splicerScreenMsg.textContent = "SIAP MENERIMA FIBER";
+          splicerSubMsg.textContent = "V-Groove L & R Terbuka";
+        }
+
+        // 3. Perbarui Layar Mikroskop Dual-Axis
+        const micLeftCladX = document.getElementById("micLeftCladX");
+        const micLeftCoreX = document.getElementById("micLeftCoreX");
+        const micRightCladX = document.getElementById("micRightCladX");
+        const micRightCoreX = document.getElementById("micRightCoreX");
+        const micLeftCladY = document.getElementById("micLeftCladY");
+        const micLeftCoreY = document.getElementById("micLeftCoreY");
+        const micRightCladY = document.getElementById("micRightCladY");
+        const micRightCoreY = document.getElementById("micRightCoreY");
+        const defectLayer = document.getElementById("defectLayer");
+        const microscopeHud = document.getElementById("microscopeHud");
+
+        const gapWidth = state.isSpliced ? 280 : (state.inSplicer ? 274 : 250);
+        const rightStartX = 640 - 40 - gapWidth;
+        const yShift = state.isSpliced ? 0 : Math.round(state.offsetY * 3);
+
+        [micLeftCladX, micLeftCoreX, micLeftCladY, micLeftCoreY].forEach(function (el) {
+          el.setAttribute("width", String(gapWidth));
+        });
+        [micRightCladX, micRightCoreX, micRightCladY, micRightCoreY].forEach(function (el) {
+          el.setAttribute("x", String(rightStartX));
+          el.setAttribute("width", String(gapWidth));
+        });
+
+        micRightCladY.setAttribute("y", String(112 + yShift));
+        micRightCoreY.setAttribute("y", String(125 + yShift));
+
+        defectLayer.setAttribute("opacity", (state.hasDirt || state.hasBubble) ? "1" : "0");
+
+        const gapText = state.isSpliced ? "0.0 µm (FUSED)" : (state.inSplicer ? "12.0 µm" : "35.0 µm");
+        const angleHud = state.angleLeft !== null ? (state.angleLeft + "° / " + state.angleRight + "°") : "-";
+        microscopeHud.textContent = "GAP: " + gapText + " | OFFSET Y: " + state.offsetY.toFixed(1) + " µm | SUDUT: " + angleHud;
+
+        // 4. Perbarui Telemetri Optik & Grafik OTDR
+        const metricAngle = document.getElementById("metricAngle");
+        const metricLoss = document.getElementById("metricLoss");
+        const metricOpm = document.getElementById("metricOpm");
+        const metricBlade = document.getElementById("metricBlade");
+        const metricBladeStatus = document.getElementById("metricBladeStatus");
+        const otdrTraceLine = document.getElementById("otdrTraceLine");
+        const otdrEventBadge = document.getElementById("otdrEventBadge");
+
+        metricAngle.textContent = state.angleLeft !== null ? (state.angleLeft + "° / " + state.angleRight + "°") : "- / -";
+        metricLoss.textContent = state.spliceLoss !== null ? (state.spliceLoss.toFixed(2) + " dB") : "- dB";
+
+        const baseOpm = -14.20;
+        const totalOpm = state.spliceLoss !== null ? (baseOpm - state.spliceLoss) : -45.00;
+        metricOpm.textContent = state.isSpliced ? (totalOpm.toFixed(2) + " dBm") : "LOS (-45.0 dBm)";
+
+        metricBlade.textContent = "Posisi #" + state.bladePosition;
+        metricBladeStatus.textContent = state.bladeIsSharp ? "Kondisi: Tajam" : "Kondisi: Tumpul!";
+        metricBladeStatus.style.color = state.bladeIsSharp ? "#4ade80" : "#f87171";
+
+        if (state.isSpliced) {
+          const dropY = state.spliceLoss <= 0.05 ? 36 : 68;
+          otdrTraceLine.setAttribute(
+            "points",
+            "30,22 36,12 42,24 166,32 170," + (dropY - 8) + " 174," + dropY + " 295," + (dropY + 8) + " 302," + (dropY - 6) + " 308,105"
+          );
+          otdrTraceLine.setAttribute("stroke", state.spliceLoss <= 0.05 ? "#22c55e" : "#ef4444");
+          otdrEventBadge.textContent = state.spliceLoss <= 0.05 ? "Event 250m: Baik (-0.02dB)" : "Event 250m: High Loss!";
+          qualityPill.textContent = state.spliceLoss <= 0.05 ? "LULUS STANDAR" : "REDAMAN TINGGI";
+        } else {
+          otdrTraceLine.setAttribute("points", "30,22 36,12 42,24 170,32 170,105");
+          otdrTraceLine.setAttribute("stroke", "#f59e0b");
+          otdrEventBadge.textContent = "Event: Putus di 250m";
+          qualityPill.textContent = "BELUM TERSAMBUNG";
+        }
+      }
+
+      // Event Listeners Kontrol Header & Alat Cepat
+      scenarioSelect.addEventListener("change", function (ev) {
+        const target = /** @type {HTMLSelectElement} */ (ev.target);
+        applyScenario(target.value);
+      });
+
+      modeGuideBtn.addEventListener("click", function () {
+        state.mode = "guide";
+        modeGuideBtn.classList.add("active");
+        modeExamBtn.classList.remove("active");
+        addLog("Mode Panduan SOP diaktifkan.", "info");
+        updateUI();
+      });
+
+      modeExamBtn.addEventListener("click", function () {
+        state.mode = "exam";
+        modeExamBtn.classList.add("active");
+        modeGuideBtn.classList.remove("active");
+        addLog("Mode Ujian Mandiri diaktifkan: Kerjakan urutan SOP tanpa petunjuk.", "warn");
+        updateUI();
+      });
+
+      document.getElementById("btnRotateBlade").addEventListener("click", function () {
+        state.bladePosition = (state.bladePosition % 16) + 1;
+        state.bladeIsSharp = true;
+        addLog("Mata pisau Cleaver diputar ke Posisi #" + state.bladePosition + " (Mata pisau baru & tajam).", "success");
+        updateUI();
+      });
+
+      document.getElementById("btnReclean").addEventListener("click", function () {
+        state.hasDirt = false;
+        state.hasBubble = false;
+        state.isCleaned = true;
+        state.isSpliced = false;
+        state.isHeated = false;
+        state.isTested = false;
+        state.spliceLoss = null;
+        state.completedSteps.delete(4);
+        state.completedSteps.delete(5);
+        state.completedSteps.delete(6);
+        state.completedSteps.delete(7);
+        state.completedSteps.delete(8);
+        addLog("Ujung fiber dibersihkan ulang dengan alkohol 96%. Siap dipotong ulang (Langkah 4).", "info");
+        updateUI();
+      });
+
+      document.getElementById("btnReset").addEventListener("click", function () {
+        resetWorkspace(true);
+      });
+
+      document.getElementById("btnAutoDemo").addEventListener("click", function () {
+        if (state.demoRunning) {
+          return;
+        }
+        resetWorkspace(true);
+        state.demoRunning = true;
+        if (!state.bladeIsSharp) {
+          state.bladePosition = (state.bladePosition % 16) + 1;
+          state.bladeIsSharp = true;
+        }
+        state.hasDirt = false;
+        addLog("Memulai simulasi otomatis 8 langkah SOP penyambungan fiber optik...", "info");
+
+        let idx = 1;
+        const timer = window.setInterval(function () {
+          if (idx > 8 || !state.demoRunning) {
+            window.clearInterval(timer);
+            state.demoRunning = false;
+            return;
+          }
+          executeStep(idx);
+          idx += 1;
+        }, 1050);
+      });
+
+      // Inisialisasi Awal
+      addLog("Selamat datang di Lab Maya TKJ - Simulasi Penyambungan Fiber Optik.", "info");
+      addLog("Pilih skenario di kanan atas atau klik Langkah 1 untuk memulai praktikum.", "info");
+      updateUI();
+    })();
+  </script>
+</body>
+</html>
